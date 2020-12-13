@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter_app_f99/base/response_state.dart';
-import 'package:flutter_app_f99/network/catalog_api_client.dart';
+import 'package:flutter_app_f99/network/catalog_repository.dart';
 import 'package:flutter_app_f99/network/response/banner_response.dart';
 
 class BannerCubit extends Cubit<ResponseState<List<BannerData>>> {

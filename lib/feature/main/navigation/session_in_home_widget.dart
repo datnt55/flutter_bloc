@@ -1,12 +1,13 @@
 import 'dart:ui';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_f99/base/response_state.dart';
-import 'package:flutter_app_f99/model/home_item.dart';
+import 'package:flutter_app_f99/feature/main/navigation/bloc/session_list_cubit.dart';
+import 'package:flutter_app_f99/feature/main/navigation/product_widget.dart';
 import 'package:flutter_app_f99/network/catalog_repository.dart';
 import 'package:flutter_app_f99/network/response/quick_access_response.dart';
+import 'package:flutter_app_f99/network/response/session_product_response.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -14,14 +15,14 @@ import 'bloc/banner_cubit.dart';
 import 'bloc/quick_access_cubit.dart';
 
 
-class QuickAccessWidget extends StatelessWidget {
+class SessionProductWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => QuickAccessCubit(repository: CatalogRepository()),
-      child: BlocBuilder<QuickAccessCubit, ResponseState<List<QuickAccessData>>>(builder: (_, state) {
+      create: (_) => SessionHomeCubit(repository: CatalogRepository()),
+      child: BlocBuilder<SessionHomeCubit, ResponseState<List<SessionData>>>(builder: (_, state) {
         if (state is LoadingState) {
-          return ShimmerQuick();
+          return ShimmerSessionInHome();
         } else if (state is ErrorState) {
           return Builder(
             builder: (context) => Container(
@@ -37,90 +38,47 @@ class QuickAccessWidget extends StatelessWidget {
                           side: BorderSide(color: Colors.grey.withOpacity(0.2))),
                       child: Text('Retry'),
                       onPressed:() {
-                        context.read<BannerCubit>().getBanner();
+                        context.read<QuickAccessCubit>().getQuickAccess();
                       },
                     )
                   ],
                 )
             ),
           );
-        } else if (state is SuccessState<List<QuickAccessData>>) {
+        } else if (state is SuccessState<List<SessionData>>) {
           final data = state.response;
-          return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width,
-                    height: 130,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: data.length,
-                      itemBuilder: (context, index) {
-                        if (index % 5 == 0) {
+          return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: data.length,
+              itemBuilder: (context, index){
+                  return Container(
+                    margin: EdgeInsets.only(bottom: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(padding: EdgeInsets.only(left: 24), child:
+                            Text(data[index].name, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 17),),),
+                            Padding(padding: EdgeInsets.only(right: 24), child: Text('View more', style: TextStyle(color: Colors.green),),)
+                          ],
+                        ),
+                        Builder(builder: (context){
+                          if (data[index].description.isEmpty){
+                            return SizedBox(height: 16,);
+                          }
                           return Container(
-                              padding: EdgeInsets.only(right: 8,top: 4, bottom: 4),
-                              width: (MediaQuery.of(context).size.width - 48) / 5- 4,
-                              child: Column(
-                                children: [
-                                  CachedNetworkImage(
-                                    imageUrl: data[index].image,
-                                    placeholder: (context, url) => Image.asset('assets/images/img_loading.png'),
-                                    errorWidget: (context, url, error) => Icon(Icons.error),
-                                    fit: BoxFit.fill,
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(data[index].name, textAlign: TextAlign.center,)
-                                ],
-                              )
-                          );
-                        }else if (index % 5 == 4) {
-                          return Container(
-                              padding:EdgeInsets.only(left: 8,top: 4, bottom: 4),
-                              width: (MediaQuery.of(context).size.width - 48) / 5 - 4,
-                              child: Column(
-                                children: [
-                                  CachedNetworkImage(
-                                    imageUrl: data[index].image,
-                                    placeholder: (context, url) => Image.asset('assets/images/img_loading.png'),
-                                    errorWidget: (context, url, error) => Icon(Icons.error),
-                                    fit: BoxFit.fill,
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(data[index].name, textAlign: TextAlign.center,)
-                                ],
-                              )
-                          );
-                        }else{
-                          return Container(
-                              padding:EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              width: (MediaQuery.of(context).size.width - 48) / 5 + 2,
-                              child: Column(
-                                children: [
-                                  CachedNetworkImage(
-                                    imageUrl: data[index].image,
-                                    placeholder: (context, url) => Image.asset('assets/images/img_loading.png'),
-                                    errorWidget: (context, url, error) => Icon(Icons.error),
-                                    fit: BoxFit.fill,
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(data[index].name, textAlign: TextAlign.center,)
-                                ],
-                              )
-                          );
-                        }
-                      },
+                            margin: EdgeInsets.only(top: 2, bottom: 24),
+                            child: Padding(padding: EdgeInsets.only(left: 24), child:  Text(data[index].description, style: TextStyle(color: Colors.grey.shade600,fontStyle: FontStyle.italic)),
+                          ));
+                        }),
+                        ProductWidget(target: data[index].target,),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-            ),
-          );
+                  );
+              });
         }
         return Container();
       }),
@@ -128,7 +86,7 @@ class QuickAccessWidget extends StatelessWidget {
   }
 }
 
-class ShimmerQuick extends StatelessWidget{
+class ShimmerSessionInHome extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Padding(

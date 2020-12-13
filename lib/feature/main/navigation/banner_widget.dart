@@ -4,10 +4,10 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_f99/base/response_state.dart';
-import 'package:flutter_app_f99/feature/location/location_selector_screen.dart';
-import 'package:flutter_app_f99/network/catalog_api_client.dart';
+import 'package:flutter_app_f99/network/catalog_repository.dart';
 import 'package:flutter_app_f99/network/response/banner_response.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shimmer/shimmer.dart';
 
 import 'bloc/banner_cubit.dart';
 
@@ -19,29 +19,27 @@ class BannerWidget extends StatelessWidget {
       create: (_) => BannerCubit(repository: CatalogRepository()),
       child: BlocBuilder<BannerCubit, ResponseState<List<BannerData>>>(builder: (_, state) {
         if (state is LoadingState) {
-          return Center(
-            child: CircularProgressIndicator(),
-          );
+          return BannerShimmerWidget();
         } else if (state is ErrorState) {
           return Builder(
             builder: (context) => Container(
-              margin: EdgeInsets.symmetric(horizontal: 32),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset('assets/images/network_issue.png'),
-                  FlatButton(
-                    minWidth: 150,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18.0),
-                        side: BorderSide(color: Colors.grey.withOpacity(0.2))),
-                    child: Text('Retry'),
-                    onPressed:() {
-                      context.read<BannerCubit>().getBanner();
-                    },
-                  )
-                ],
-              )
+                margin: EdgeInsets.symmetric(horizontal: 32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset('assets/images/network_issue.png'),
+                    FlatButton(
+                      minWidth: 150,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                          side: BorderSide(color: Colors.grey.withOpacity(0.2))),
+                      child: Text('Retry'),
+                      onPressed:() {
+                        context.read<BannerCubit>().getBanner();
+                      },
+                    )
+                  ],
+                )
             ),
           );
         } else if (state is SuccessState<List<BannerData>>) {
@@ -103,9 +101,9 @@ class _BannerState extends State<BannerSliderWidget> {
               children: [
                 Container(
                     width: MediaQuery.of(context).size.width,
-                    height: 200,
+                    height: 220,
                     child: ClipRRect(
-                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15.0), bottomRight: Radius.circular(15.0)),
+                        borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20.0), bottomRight: Radius.circular(20.0)),
                         child: Opacity(
                           child: Image.network(
                             banner[state % banner.length].background,
@@ -115,8 +113,8 @@ class _BannerState extends State<BannerSliderWidget> {
                         ))),
                 Container(
                     width: MediaQuery.of(context).size.width,
-                    height: 170,
-                    margin: EdgeInsets.only(top: 115.0),
+                    height: 165,
+                    margin: EdgeInsets.only(top: 130.0),
                     child: PageView.builder(
                         controller: _pageController,
                         onPageChanged: (index) {
@@ -168,5 +166,55 @@ class _BannerState extends State<BannerSliderWidget> {
     super.dispose();
     _pageController.dispose();
     timer.cancel();
+  }
+}
+
+class BannerShimmerWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Container(
+            width: MediaQuery.of(context).size.width,
+            height: 200,
+            child:Shimmer.fromColors(
+              child: ClipRRect(
+                  borderRadius: BorderRadius.only(bottomLeft: Radius.circular(15.0), bottomRight: Radius.circular(15.0)),
+                  child: Container(
+                    color: Colors.white,
+                    width: MediaQuery.of(context).size.width,
+                    height: 200,
+                  )
+              ),
+              baseColor: Colors.grey[300],
+              highlightColor: Colors.grey[100],)
+        ),
+        Container(
+            width: MediaQuery.of(context).size.width,
+            height: 170,
+            margin: EdgeInsets.only(top: 115.0),
+            child: Shimmer.fromColors(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                  boxShadow: [
+                    BoxShadow(color: Colors.black.withOpacity(0.3), spreadRadius: 1, blurRadius: 4, offset: Offset(0, 3)),
+                  ],
+                ),
+                margin: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                    child: Container(
+                      color: Colors.white,
+                      width: MediaQuery.of(context).size.width,
+                      height: 170,
+                    )
+                ),
+              ),
+              baseColor: Colors.grey[300],
+              highlightColor: Colors.grey[100],)
+        )
+      ],
+    );
   }
 }

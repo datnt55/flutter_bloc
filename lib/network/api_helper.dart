@@ -11,5 +11,9 @@ class APIHelper {
 
   static const url_quick_access = '$catalog_service/api/Home/QuickAccess';
 
+  static const url_list_section = '$catalog_service/api/Home/HSections';
 
+  static const url_list_product = '$catalog_service/api/CollectionProduct/';
+
+  static const url_product_detail = '$catalog_service/api/Products/';
 }

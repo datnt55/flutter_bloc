@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_app_f99/feature/main/navigation/main_screen.dart';
 import 'package:flutter_app_f99/feature/main/navigation_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
 import 'bloc_observer.dart';
 
@@ -14,6 +16,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.light));
     return BlocProvider(
         create: (_) => NavigationCubit(),
         child: BlocBuilder<NavigationCubit, int>(
