@@ -7,6 +7,9 @@ class APIHelper {
   // List Service
   static const catalog_service = '${baseUrl}catalog/v2';
 
+  static const seller_service = '${baseUrl}seller/v2';
+
+  // List API
   static const url_banner = '$catalog_service/api/Home/Banners';
 
   static const url_quick_access = '$catalog_service/api/Home/QuickAccess';
@@ -16,4 +19,6 @@ class APIHelper {
   static const url_list_product = '$catalog_service/api/CollectionProduct/';
 
   static const url_product_detail = '$catalog_service/api/Products/';
+
+  static const url_seller_detail = '$seller_service/api/Sellers/';
 }

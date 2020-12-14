@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_f99/base/response_state.dart';
 import 'package:flutter_app_f99/feature/product/product_detail_screen.dart';
-import 'package:flutter_app_f99/network/catalog_repository.dart';
+import 'file:///D:/Android/flutter/Example/clone_f99/flutter_bloc/lib/network/repository/catalog_repository.dart';
 import 'package:flutter_app_f99/network/response/product_response.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -97,15 +97,27 @@ class ProductWidget extends StatelessWidget {
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Row(
+                              Flexible(
+                                  child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  Text('${oCcy.format(data[index].price)} đ', style: TextStyle(color: Colors.green.shade700, fontSize: 14, fontWeight: FontWeight.bold)),
-                                  Text( '/ ${data[index].unit}', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+                                  Text('${oCcy.format(data[index].price)}đ', style: TextStyle(color: Colors.green.shade700, fontSize: 14, fontWeight: FontWeight.bold)),
+
+                                  Flexible(
+                                      child: Container(
+                                        child: Text( '/${data[index].unit}', style: TextStyle(color: Colors.grey.shade500, fontSize: 11), maxLines: 1, overflow: TextOverflow.ellipsis,),
+                                      )
+                                  )
                                 ],
-                              ),
-                              Icon(Icons.add_circle_outlined, color: Colors.green.shade700,size: 35,)
+                              ), flex: 4,
+                              )
+                             ,
+                              Flexible(
+                                child:  Icon(Icons.add_circle_outlined, color: Colors.green.shade700,size: 30,), flex: 1,
+                              )
+
                             ],
                           )
                         ],

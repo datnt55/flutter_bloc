@@ -5,7 +5,7 @@ import 'package:flutter_app_f99/feature/main/navigation_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_statusbarcolor/flutter_statusbarcolor.dart';
 
-import 'bloc_observer.dart';
+import 'feature/main/bloc_observer.dart';
 
 void main() {
   Bloc.observer = SimpleBlocObserver();
